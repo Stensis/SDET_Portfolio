@@ -6,6 +6,7 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/',
   plugins: [
     tanstackStart(), // Runs the full-stack TanStack Start development server
     react(),
