@@ -1,0 +1,147 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-glow: var(--primary-glow);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-success: var(--success);
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+:root {
+  --radius: 0.875rem;
+
+  /* Dark navy base, hot pink accent — mirrors reference portfolio */
+  --background: oklch(0.16 0.03 270);
+  --foreground: oklch(0.98 0.005 270);
+
+  --surface: oklch(0.20 0.035 270);
+  --surface-elevated: oklch(0.235 0.04 270);
+
+  --card: oklch(0.20 0.035 270);
+  --card-foreground: oklch(0.98 0.005 270);
+  --popover: oklch(0.20 0.035 270);
+  --popover-foreground: oklch(0.98 0.005 270);
+
+  --primary: oklch(0.66 0.25 12);              /* hot pink/red */
+  --primary-foreground: oklch(0.99 0 0);
+  --primary-glow: oklch(0.74 0.22 6);
+
+  --secondary: oklch(0.26 0.04 270);
+  --secondary-foreground: oklch(0.98 0.005 270);
+
+  --muted: oklch(0.24 0.035 270);
+  --muted-foreground: oklch(0.72 0.02 270);
+
+  --accent: oklch(0.66 0.25 12);
+  --accent-foreground: oklch(0.99 0 0);
+
+  --success: oklch(0.72 0.16 165);
+  --destructive: oklch(0.66 0.25 22);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.30 0.035 270 / 60%);
+  --input: oklch(0.30 0.035 270);
+  --ring: oklch(0.66 0.25 12);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.66 0.25 12), oklch(0.74 0.22 6));
+  --gradient-surface: linear-gradient(180deg, oklch(0.20 0.035 270), oklch(0.17 0.03 270));
+  --gradient-hero-glow: radial-gradient(ellipse at top right, oklch(0.66 0.25 12 / 0.25), transparent 60%);
+
+  --shadow-glow: 0 20px 60px -20px oklch(0.66 0.25 12 / 0.55);
+  --shadow-card: 0 10px 30px -15px oklch(0 0 0 / 0.5);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.66 0.25 12 / 0.18), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, oklch(0.66 0.25 12 / 0.10), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@utility chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: 0.78rem;
+  color: var(--color-muted-foreground);
+}
+
+@utility chip-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid oklch(0.66 0.25 12 / 0.3);
+  background: oklch(0.66 0.25 12 / 0.10);
+  font-size: 0.78rem;
+  color: var(--color-primary);
+}
+
+@utility text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
