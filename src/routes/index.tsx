@@ -5,15 +5,47 @@ import {
   Bug, ShieldCheck, Workflow, Gauge, TestTube2, Cpu, GitBranch, Database,
   Github, Linkedin, Mail, Phone, MapPin, ArrowUpRight, Sparkles, CheckCircle2,
   Layers, Smartphone, Code2, FileCheck2, AlertTriangle, Activity, Search, Send,
-  Terminal, PlayCircle, FileText,
+  Terminal, FileText,
   CheckCircle,
 } from "lucide-react";
+
+const siteUrl = "https://irenenjugunasdet-portfolio.vercel.app";
+const profileImage = `${siteUrl}/irene-profile.jpeg`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Irene Njuguna — QA / SDET Portfolio" },
-      { name: "description", content: "QA Engineer & SDET transitioning from full-stack. Manual + automated testing, Cypress, Playwright, Postman, CI quality gates." },
+      {
+        name: "description",
+        content:
+          "QA Engineer & SDET transitioning from full-stack. Manual + automated testing, Playwright, Postman, CI quality gates.",
+      },
+      {
+        property: "og:title",
+        content: "Irene Njuguna — QA / SDET Portfolio",
+      },
+      {
+        property: "og:description",
+        content:
+          "QA Engineer & SDET specializing in manual testing, automation, Playwright, Postman, and CI quality gates.",
+      },
+      {
+        property: "og:image",
+        content: profileImage,
+      },
+      {
+        property: "og:type",
+        content: "website",
+      },
+      {
+        name: "twitter:card",
+        content: "summary_large_image",
+      },
+      {
+        name: "twitter:image",
+        content: profileImage,
+      },
     ],
   }),
   component: Index,
