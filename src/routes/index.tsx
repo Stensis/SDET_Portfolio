@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
       {
         rel: "icon",
         type: "image/png",
-        href: "/public/favicon.ico",
+        href: "/favicon.ico",
       },
     ],
     meta: [
@@ -348,7 +348,7 @@ function Hero() {
               <div className="grid grid-cols-2 gap-3 mt-6">
 
                 <a
-                  href="/Irene_Njuguna_QA_CV.pdf"
+                  href="https://drive.google.com/file/d/1yagCRVFISxa1N4vYLExXNnIpJ54637kQ/view?usp=drive_link"
                   target="_blank"
                   className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-primary-foreground"
                   style={{ background: "var(--gradient-primary)" }}
