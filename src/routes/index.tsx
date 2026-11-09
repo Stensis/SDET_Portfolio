@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {
-  Bug,
+  X,
+  Menu,
   ShieldCheck,
   Workflow,
   Gauge,
@@ -26,6 +27,9 @@ import {
   ExternalLink,
   Download,
   Briefcase,
+  FileText,     
+  ChevronDown,
+  LucideIcon
 } from "lucide-react";
 
 const siteUrl = "https://irenenjugunasdet-portfolio.vercel.app";
@@ -93,12 +97,9 @@ export const Route = createFileRoute("/")({
 
 const nav = [
   { id: "about", label: "About" },
-  // { id: "services", label: "Services" },
   { id: "skills", label: "Skills" },
   { id: "projects", label: "Projects" },
-  // { id: "artifacts", label: "Artifacts" },
   { id: "experience", label: "Experience" },
-  { id: "faqs", label: "Faqs" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -109,12 +110,9 @@ function Index() {
       <main>
         <Hero />
         <About />
-        {/* <Services /> */}
         <Skills />
         <Projects />
-        {/* <Artifacts /> */}
         <Experience />
-        <FAQ />
         <Contact />
       </main>
       <Footer />
@@ -123,64 +121,207 @@ function Index() {
 }
 
 /* ----------------------------- Header ----------------------------- */
+
 function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("top");
+
+  useEffect(() => {
+    const updateActiveSection = () => {
+      const sections = ["top", ...nav.map((item) => item.id)];
+      let current = "top";
+
+      for (const id of sections) {
+        const section = document.getElementById(id);
+
+        if (section && section.getBoundingClientRect().top <= 150) {
+          current = id;
+        }
+      }
+
+      setActiveSection(current);
+    };
+
+    updateActiveSection();
+
+    window.addEventListener("scroll", updateActiveSection, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+    };
+  }, []);
+
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border">
-      <div className="container-page flex items-center justify-between py-4">
-        <a href="#top" className="flex items-center gap-3">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
+      <div className="container-page flex min-h-20 items-center justify-between gap-4">
+
+        {/* Logo and Name */}
+        <a
+          href="#top"
+          onClick={closeMobileMenu}
+          className="flex shrink-0 items-center gap-3"
+          aria-label="Irene Njuguna - Back to top"
+        >
           <span
-            className="grid place-items-center w-10 h-10 rounded-full text-sm font-bold text-primary-foreground"
+            className="grid h-10 w-10 place-items-center rounded-full text-sm font-bold text-primary-foreground"
             style={{ background: "var(--gradient-primary)" }}
           >
             IN
           </span>
-          <span className="block text-[0.7rem] uppercase tracking-widest text-muted-foreground">
-            QA Automation Portfolio
-          </span>
 
-          <span className="block font-display font-semibold">
-            Irene <span className="text-primary">Njuguna</span>
+          <span className="flex flex-col">
+            <span className="font-display text-sm font-semibold leading-tight sm:text-base">
+              Irene <span className="text-primary">Njuguna</span>
+            </span>
+
+            <span className="mt-1 text-[0.65rem] uppercase tracking-wider text-muted-foreground">
+              QA Engineer Portfolio
+            </span>
           </span>
         </a>
-        <nav className="hidden md:flex items-center gap-1 rounded-full border border-border bg-surface/60 px-2 py-1.5">
-          {nav.map((n) => (
-            <a
-              key={n.id}
-              href={`#${n.id}`}
-              className="px-3 py-1.5 text-sm rounded-full text-muted-foreground hover:text-foreground hover:bg-surface-elevated transition"
-            >
-              {n.label}
-            </a>
-          ))}
+
+        {/* Desktop Navigation */}
+        <nav
+          aria-label="Main navigation"
+          className="hidden items-center gap-1 rounded-full border border-border bg-surface/60 p-1.5 lg:flex"
+        >
+          {nav.map((item) => {
+            const isActive = activeSection === item.id;
+
+            return (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                aria-current={isActive ? "location" : undefined}
+                className={`rounded-full px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-surface-elevated hover:text-foreground"
+                }`}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
-        <div className="flex items-center gap-2">
+
+        {/* Desktop Social Links and CTA */}
+        <div className="hidden shrink-0 items-center gap-2 lg:flex">
           <a
             href="https://github.com/Stensis"
             target="_blank"
-            rel="noreferrer"
-            aria-label="GitHub"
-            className="grid place-items-center w-10 h-10 rounded-full border border-border bg-surface hover:text-primary transition"
+            rel="noopener noreferrer"
+            aria-label="Visit GitHub profile"
+            className="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface transition hover:border-primary/50 hover:text-primary"
           >
-            <Github className="w-4 h-4" />
+            <Github className="h-4 w-4" />
           </a>
+
           <a
             href="https://linkedin.com/in/irene-njuguna98"
             target="_blank"
-            rel="noreferrer"
-            aria-label="LinkedIn"
-            className="grid place-items-center w-10 h-10 rounded-full border border-border bg-surface hover:text-primary transition"
+            rel="noopener noreferrer"
+            aria-label="Visit LinkedIn profile"
+            className="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface transition hover:border-primary/50 hover:text-primary"
           >
-            <Linkedin className="w-4 h-4" />
+            <Linkedin className="h-4 w-4" />
           </a>
+
           <a
             href="#contact"
-            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium text-primary-foreground shadow-(--shadow-glow)"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
             style={{ background: "var(--gradient-primary)" }}
           >
-            Get in Touch <ArrowUpRight className="w-4 h-4" />
+            Get in Touch
+            <ArrowUpRight className="h-4 w-4" />
           </a>
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          type="button"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => setMobileMenuOpen((previous) => !previous)}
+          className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-surface text-foreground transition hover:border-primary/50 lg:hidden"
+        >
+          {mobileMenuOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
+        </button>
       </div>
+
+      {/* Mobile Navigation */}
+      {mobileMenuOpen && (
+        <nav
+          id="mobile-navigation"
+          aria-label="Mobile navigation"
+          className="border-t border-border bg-background px-5 py-5 lg:hidden"
+        >
+          <div className="mx-auto flex max-w-md flex-col gap-2">
+            {nav.map((item) => {
+              const isActive = activeSection === item.id;
+
+              return (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={closeMobileMenu}
+                  aria-current={isActive ? "location" : undefined}
+                  className={`rounded-xl px-4 py-3 text-sm font-medium transition ${
+                    isActive
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-surface hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
+
+            <div className="my-2 border-t border-border" />
+
+            <div className="flex items-center gap-3">
+              <a
+                href="https://github.com/Stensis"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface"
+              >
+                <Github className="h-4 w-4" />
+              </a>
+
+              <a
+                href="https://linkedin.com/in/irene-njuguna98"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface"
+              >
+                <Linkedin className="h-4 w-4" />
+              </a>
+
+              <a
+                href="#contact"
+                onClick={closeMobileMenu}
+                className="ml-auto inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-primary-foreground"
+                style={{ background: "var(--gradient-primary)" }}
+              >
+                Get in Touch
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+        </nav>
+      )}
     </header>
   );
 }
@@ -373,7 +514,7 @@ function Hero() {
               {/* Buttons */}
               <div className="grid grid-cols-2 gap-3 mt-6">
                 <a
-                  href="https://drive.google.com/file/d/1yagCRVFISxa1N4vYLExXNnIpJ54637kQ/view?usp=drive_link"
+                  href="https://drive.google.com/file/d/1AvsDJnj1cKNpZlvUFEfgLoN1oltFCBwp/view?usp=sharing"
                   target="_blank"
                   className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-primary-foreground"
                   style={{ background: "var(--gradient-primary)" }}
@@ -401,7 +542,6 @@ function Hero() {
 }
 
 /* ------------------------------ About ------------------------------ */
-
 function About() {
   const focusAreas = [
     {
@@ -523,84 +663,7 @@ function About() {
   );
 }
 
-/* --------------------------- Services --------------------------- */
-// function Services() {
-//   const items = [
-//     {
-//       icon: FileCheck2,
-//       t: "Exploratory & Manual Testing",
-//       d: "Executing meticulous, risk-based exploratory sessions, uncovering edge cases, and mapping complex user flows to intercept failures before production."
-//     },
-//     {
-//       icon: Bug,
-//       t: "Defect Root-Cause Analysis",
-//       d: "Inspecting browser dev tools, console errors, network payloads, and server logs to write high-fidelity bug reports with precise reproduction steps."
-//     },
-//     {
-//       icon: TestTube2,
-//       t: "End-to-End Automation",
-//       d: "Building structured automated regression scripts with Playwright frameworks, leveraging clean data structures to validate core application states."
-//     },
-//     {
-//       icon: Workflow,
-//       t: "API & Payload Verification",
-//       d: "Validating RESTful endpoints, checking response status codes, payload structures, and isolating authentication bottlenecks."
-//     },
-//     {
-//       icon: Smartphone,
-//       t: "Functional Web & Mobile QA",
-//       d: "Verifying multi-device interface responsiveness, cross-browser compatibility, and localized UI layout integrity across staging builds."
-//     },
-//     {
-//       icon: GitBranch,
-//       t: "CI/CD Staging Integration",
-//       d: "Configuring automated regression triggers within GitHub Actions pipelines to capture failures before deployment gates open."
-//     },
-//     {
-//       icon: Gauge,
-//       t: "Performance Load Simulation",
-//       d: "Simulating concurrent traffic spikes using tools like Artillery to observe how backends handle intense system pressure."
-//     },
-//     {
-//       icon: AlertTriangle,
-//       t: "Regression Strategy",
-//       d: "Organizing manual and automated sanity checks, smoke test sheets, and tiered regression passes aligned with product release cadences."
-//     },
-//   ];
-
-//   return (
-//     <section id="services" className="py-20 lg:py-28">
-//       <div className="container-page">
-//         <SectionHeader
-//           eyebrow="Services"
-//           title={<>What I do as a <span className="text-gradient">QA / SDET</span></>}
-//           subtitle="From writing the first test plan to maintaining the regression pipeline — practical quality work that ships."
-//         />
-//         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
-//           {items.map(({ icon: Icon, t, d }) => (
-//             <motion.div
-//               key={t}
-//               initial={{ opacity: 0, y: 16 }}
-//               whileInView={{ opacity: 1, y: 0 }}
-//               viewport={{ once: true, margin: "-50px" }}
-//               transition={{ duration: 0.4 }}
-//               className="group rounded-2xl border border-border bg-surface/60 p-5 hover:border-primary/50 hover:bg-surface-elevated transition"
-//             >
-//               <div className="w-10 h-10 grid place-items-center rounded-xl bg-primary/10 text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition">
-//                 <Icon className="w-5 h-5" />
-//               </div>
-//               <div className="font-display font-semibold mb-1">{t}</div>
-//               <div className="text-sm text-muted-foreground leading-relaxed">{d}</div>
-//             </motion.div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
 /* ----------------------------- Skills ----------------------------- */
-
 function Skills() {
   const tabs = [
     {
@@ -717,6 +780,9 @@ function Skills() {
         "Test Case Design",
         "RTM",
         "Defect Reporting",
+        "QA Reporting",
+        "Change Management",
+        "Exploratory Testing",
         "Playwright",
         "API Testing",
       ],
@@ -736,7 +802,7 @@ function Skills() {
         },
         {
           title: "Backend & Databases",
-          items: ["Node.js", "Express.js", "REST APIs", "PostgreSQL", "MongoDB", "SQL"],
+          items: ["Node.js", "Express.js","Python" ,"REST APIs", "PostgreSQL", "MongoDB", "SQL"],
         },
         {
           title: "Cloud & DevOps",
@@ -876,16 +942,20 @@ function Skills() {
 
 /* ---------------------------- Projects ---------------------------- */
 type ProjectTag = "Automation" | "API" | "Manual" | "Performance" | "Mobile";
-
-type ProjectMetric = {
-  label: string;
-  value: string;
-};
+type ProjectFilter = "All" | ProjectTag;
+type ProjectMetric = { label: string; value: string };
 
 type ProjectLink = {
   label: string;
   url: string;
-  type: "github" | "report";
+  type: "github" | "report" | "google document" | "google sheet";
+};
+
+type QADeliverable = {
+  title: string;
+  description: string;
+  url: string;
+  type: "document" | "sheet";
 };
 
 type Project = {
@@ -896,327 +966,251 @@ type Project = {
   tech: string[];
   metrics: ProjectMetric[];
   links?: ProjectLink[];
+  deliverables?: QADeliverable[];
 };
 
 const projects: Project[] = [
   {
     title: "ParaBank — End-to-End Banking Automation",
     tag: "Automation",
-    summary:
-      "Built automated end-to-end tests for the ParaBank demo banking application, covering authentication, session handling, bill payments, form validation, and negative user scenarios.",
+    summary: "Built automated end-to-end tests for the ParaBank demo banking application, covering authentication, session handling, bill payments, form validation, and negative user scenarios.",
     best: "Created data-driven Playwright tests for valid, invalid, empty, boundary, security, whitespace, and session-related scenarios using reusable page objects and test data.",
     tech: ["Playwright", "TypeScript", "Page Object Model", "Playwright HTML Report", "GitHub"],
-    metrics: [
-      { label: "Login scenarios", value: "13" },
-      { label: "Bill-pay tests", value: "10" },
-      { label: "Core areas", value: "3+" },
-    ],
-    links: [
-      {
-        label: "View repository",
-        url: "https://github.com/KennOtieno/parabank",
-        type: "github",
-      },
-    ],
+    metrics: [{ label: "Login scenarios", value: "13" }, { label: "Bill-pay tests", value: "10" }, { label: "Core areas", value: "3+" }],
+    links: [{ label: "View repository", url: "https://github.com/KennOtieno/parabank", type: "github" }],
   },
   {
     title: "OrangeHRM — Web Automation Test Suite",
     tag: "Automation",
-    summary:
-      "Developed a maintainable Playwright automation framework for OrangeHRM, covering authentication, dashboard navigation, employee management, search, and profile update workflows.",
+    summary: "Developed a maintainable Playwright automation framework for OrangeHRM, covering authentication, dashboard navigation, employee management, search, and profile update workflows.",
     best: "Structured the framework with Page Object Model classes, reusable fixtures, dynamic test data, environment variables, constants, UI-based assertions, and GitHub Actions.",
     tech: ["Playwright", "TypeScript", "Page Object Model", "GitHub Actions", "Dynamic Test Data"],
-    metrics: [
-      { label: "Core modules", value: "3" },
-      { label: "Test layers", value: "E2E" },
-      { label: "CI workflow", value: "1" },
-    ],
-    links: [
-      {
-        label: "View repository",
-        url: "https://github.com/Stensis/Orange_Hrm",
-        type: "github",
-      },
-    ],
+    metrics: [{ label: "Core modules", value: "3" }, { label: "Test layers", value: "E2E" }, { label: "CI workflow", value: "1" }],
+    links: [{ label: "View repository", url: "https://github.com/Stensis/Orange_Hrm", type: "github" }],
   },
   {
     title: "DummyJSON — E-commerce API Test Collection",
     tag: "API",
-    summary:
-      "Created a Postman API testing project for the DummyJSON e-commerce service, covering products, carts, users, authentication, CRUD operations, and negative scenarios.",
+    summary: "Created a Postman API testing project for the DummyJSON e-commerce service, covering products, carts, users, authentication, CRUD operations, and negative scenarios.",
     best: "Automated response validation using JavaScript assertions and executed the collection through Newman with an HTML test report suitable for CI and portfolio evidence.",
     tech: ["Postman", "Newman", "JavaScript", "JSON", "Newman HTML Extra"],
-    metrics: [
-      { label: "API areas", value: "4" },
-      { label: "HTTP methods", value: "4" },
-      { label: "HTML reports", value: "Yes" },
-    ],
-    links: [
-      {
-        label: "View repository",
-        url: "https://github.com/Stensis/dummyjson-api-testing-postman",
-        type: "github",
-      },
-      {
-        label: "View test report",
-        url: "YOUR_NEWMAN_REPORT_URL",
-        type: "report",
-      },
-    ],
+    metrics: [{ label: "API areas", value: "4" }, { label: "HTTP methods", value: "4" }, { label: "HTML reports", value: "Yes" }],
+    links: [{ label: "View repository", url: "https://github.com/Stensis/dummyjson-api-testing-postman", type: "github" }],
+    // Add a report link once you have a real public URL.
   },
   {
     title: "The Internet Heroku — Authentication Testing Suite",
     tag: "Automation",
-    summary:
-      "Built a modular, data-driven authentication framework covering valid login, invalid credentials, blank inputs, whitespace, casing, SQL injection, XSS, and logout behavior.",
+    summary: "Built a modular, data-driven authentication framework covering valid login, invalid credentials, blank inputs, whitespace, casing, SQL injection, XSS, and logout behavior.",
     best: "Identified and documented BUG-001 after discovering that blank credentials returned a misleading invalid-username message instead of required-field feedback.",
-    tech: [
-      "Playwright",
-      "TypeScript",
-      "Page Object Model",
-      "JSON Test Data",
-      "Custom Fixtures",
-      "Defect Reporting",
-    ],
-    metrics: [
-      { label: "Login scenarios", value: "11" },
-      { label: "Defects found", value: "1" },
-      { label: "Fixtures", value: "Custom" },
-    ],
-    links: [
-      {
-        label: "View repository",
-        url: "https://github.com/Stensis/Internet_heroku_test",
-        type: "github",
-      },
-    ],
+    tech: ["Playwright", "TypeScript", "Page Object Model", "JSON Test Data", "Custom Fixtures", "Defect Reporting"],
+    metrics: [{ label: "Login scenarios", value: "11" }, { label: "Defects found", value: "1" }, { label: "Fixtures", value: "Custom" }],
+    links: [{ label: "View repository", url: "https://github.com/Stensis/Internet_heroku_test", type: "github" }],
   },
   {
     title: "Rocky Ridge Farm — UI and API Test Automation",
     tag: "Automation",
-    summary:
-      "Created Playwright tests for the Rocky Ridge Farm e-commerce platform, including authentication workflows and API test coverage.",
+    summary: "Created Playwright tests for the Rocky Ridge Farm e-commerce platform, including authentication workflows and API test coverage.",
     best: "Combined browser-based and API testing in one Playwright project so important application behavior could be validated across both the user interface and service layers.",
     tech: ["Playwright", "TypeScript", "API Testing", "Authentication Testing", "GitHub"],
-    metrics: [
-      { label: "Test layers", value: "UI + API" },
-      { label: "Core focus", value: "Auth" },
-      { label: "Repository", value: "Public" },
-    ],
-    links: [
-      {
-        label: "View repository",
-        url: "https://github.com/Stensis/rockyridgesfarm-playwright-tests-",
-        type: "github",
-      },
-    ],
+    metrics: [{ label: "Test layers", value: "UI + API" }, { label: "Core focus", value: "Auth" }, { label: "Repository", value: "Public" }],
+    links: [{ label: "View repository", url: "https://github.com/Stensis/rockyridgesfarm-playwright-tests-", type: "github" }],
   },
   {
     title: "SauceDemo — E-commerce E2E Automation Framework",
     tag: "Automation",
-    summary:
-      "Built a scalable, data-driven Playwright framework for SauceDemo covering authentication, inventory, sorting, cart management, checkout validation, financial calculations, and complete order processing.",
+    summary: "Built a scalable, data-driven Playwright framework for SauceDemo covering authentication, inventory, sorting, cart management, checkout validation, financial calculations, and complete order processing.",
     best: "Implemented reusable Page Object Model classes, JSON-driven scenarios, cross-browser execution, mobile viewport coverage, secure environment variables, and GitHub Actions CI.",
-    tech: [
-      "Playwright",
-      "TypeScript",
-      "Page Object Model",
-      "JSON",
-      "GitHub Actions",
-      "Cross-browser Testing",
-    ],
-    metrics: [
-      { label: "Test suites", value: "3" },
-      { label: "Browsers", value: "3" },
-      { label: "Core flows", value: "4" },
-    ],
-    links: [
-      {
-        label: "View repository",
-        url: "https://github.com/Stensis/saucedemo",
-        type: "github",
-      },
+    tech: ["Playwright", "TypeScript", "Page Object Model", "JSON", "GitHub Actions", "Cross-browser Testing"],
+    metrics: [{ label: "Test suites", value: "3" }, { label: "Browsers", value: "3" }, { label: "Core flows", value: "4" }],
+    links: [{ label: "View repository", url: "https://github.com/Stensis/saucedemo", type: "github" }],
+  },
+  {
+    title: "Kiwami Marketing Tool — Manual QA Project",
+    tag: "Manual",
+    summary: "A structured manual testing project with QA artifacts covering test planning, requirements traceability, test case design, defect tracking, QA reporting, and exploratory testing.",
+    best: "Prepared six interconnected QA documents to demonstrate the manual testing process from planning through reporting and exploratory investigation.",
+    tech: ["Manual Testing", "Test Planning", "RTM", "Test Design", "Defect Reporting", "Exploratory Testing"],
+    metrics: [{ label: "QA artifacts", value: "6" }, { label: "Testing approach", value: "Manual" }, { label: "Project", value: "Kiwami" }],
+    deliverables: [
+      { title: "Test Plan", description: "Testing objectives, scope, approach, and schedule.", url: "https://docs.google.com/document/d/1fH-VqLq4ELoyy_5qzYNVUqx1xWVNKxEbIEFl2kEScWg/edit?tab=t.0", type: "document" },
+      { title: "Requirements Traceability Matrix (RTM)", description: "Connect requirements to test coverage and test cases.", url: "https://docs.google.com/spreadsheets/d/1KFcevuIM6mI2UWtp-CZ0uvfFqPasv06yJmgugJEsXnk/edit?gid=0#gid=0", type: "sheet" },
+      { title: "Test Cases", description: "Test scenarios, steps, expected results, and outcomes.", url: "https://docs.google.com/spreadsheets/d/1JDPYjvP59SwFtoOImPjg17f7UtR3LDV0YUvMfPbrctk/edit?gid=0#gid=0", type: "sheet" },
+      { title: "Bug Report", description: "Defect records, severity, status, and reproduction steps.", url: "https://docs.google.com/spreadsheets/d/1Sh9NXEOG4rB46mPg9vbpMYtOQXrT1kCVA9TZyLLrpTQ/edit?gid=0#gid=0", type: "sheet" },
+      { title: "QA Report", description: "A consolidated view of test results, findings, and risks.", url: "https://docs.google.com/document/d/1uLcht1k4j4VpO4DgfkLn6DYH_IGKcNdwvVkWjZtu4YM/edit?tab=t.0", type: "document" },
+      { title: "Exploratory Testing & Feature Brainstorming", description: "Additional observations, discoveries, and ideas gathered during exploration.", url: "https://docs.google.com/spreadsheets/d/1GFsK-gEpvOcHliEWI3417I5R4g_LeB4bSSJSnlbBRHQ/edit?gid=0#gid=0", type: "sheet" },
     ],
   },
-  //   {
-  //   title: "100 Days of DSA — Daily Problem-Solving Challenge",
-  //   tag: "Learning",
-  //   summary:
-  //     "An ongoing 100-day challenge focused on strengthening data structures, algorithms, TypeScript fundamentals, and structured problem-solving through consistent daily practice.",
-  //   best:
-  //     "Started a public learning log with daily solutions and explanations, demonstrating consistency, analytical thinking, and commitment to continuous improvement.",
-  //   tech: [
-  //     "TypeScript",
-  //     "Data Structures",
-  //     "Algorithms",
-  //     "Problem Solving",
-  //     "GitHub",
-  //   ],
-  //   metrics: [
-  //     { label: "Current day", value: "2/100" },
-  //     { label: "Status", value: "Active" },
-  //     { label: "Cadence", value: "Daily" },
-  //   ],
-  // },
+  // SECOND MANUAL PROJECT EXAMPLE: duplicate the Kiwami object above,
+  // change the title, description, and document URLs, then add it here.
 ];
 
-const projectFilters = ["All", "Automation", "API", "Manual", "Performance", "Mobile"] as const;
+const projectFilters: ProjectFilter[] = [
+  "All",
+  "Automation",
+  "API",
+  "Manual",
+];
 
-type ProjectFilter = (typeof projectFilters)[number];
+function ManualWorkflow({ deliverables }: { deliverables: QADeliverable[] }) {
+  const [expanded, setExpanded] = useState(true);
 
-function Projects() {
+  return (
+    <div className="mt-5 rounded-2xl border border-border bg-background/30 p-4">
+      <button
+        type="button"
+        onClick={() => setExpanded((previous) => !previous)}
+        aria-expanded={expanded}
+        className="flex w-full items-center justify-between gap-3 text-left"
+      >
+        <span className="flex items-center gap-2 text-sm font-semibold">
+          <FileText className="h-4 w-4 text-primary" />
+          QA Documentation Workflow
+        </span>
+        <span className="flex items-center gap-2 text-xs text-muted-foreground">
+          {deliverables.length} documents
+          <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`} />
+        </span>
+      </button>
+
+      {expanded && (
+        <div className="mt-4 space-y-2">
+          {deliverables.map((item, index) => (
+            <a
+              key={`${item.title}-${index}`}
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/item flex items-center gap-3 rounded-xl border border-border bg-surface/60 p-3 transition hover:border-primary/50 hover:bg-primary/5"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 font-mono text-xs font-bold text-primary">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium transition group-hover/item:text-primary">{item.title}</span>
+                <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">{item.description}</span>
+              </span>
+              <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground group-hover/item:text-primary" />
+            </a>
+          ))}
+          <p className="pt-2 text-xs leading-relaxed text-muted-foreground">
+            Note: exploratory testing can also take place throughout the testing lifecycle.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function Projects() {
   const [activeFilter, setActiveFilter] = useState<ProjectFilter>("All");
-
-  const filteredProjects =
-    activeFilter === "All" ? projects : projects.filter((project) => project.tag === activeFilter);
+  const filteredProjects = activeFilter === "All"
+    ? projects
+    : projects.filter((project) => project.tag === activeFilter);
 
   return (
     <section id="projects" className="py-20 lg:py-28">
       <div className="container-page">
         <SectionHeader
           eyebrow="QA Projects"
-          title={
-            <>
-              Quality engineering through <span className="text-gradient">hands-on projects</span>
-            </>
-          }
-          subtitle="Automation frameworks, API test collections, and practical testing projects built with Playwright, TypeScript, Postman, Newman, and continuous integration."
+          title={<>Quality engineering through <span className="text-gradient">hands-on projects</span></>}
+          subtitle="Explore manual testing projects and their complete QA documentation, alongside Playwright automation frameworks and Postman API test collections."
         />
 
-        <div className="mt-10 mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-6 mt-10 flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap gap-2">
-            {projectFilters.map((filter) => {
-              const isActive = activeFilter === filter;
-
-              return (
-                <button
-                  key={filter}
-                  type="button"
-                  onClick={() => setActiveFilter(filter)}
-                  aria-pressed={isActive}
-                  className={
-                    isActive
-                      ? "chip-accent"
-                      : "chip transition hover:border-primary/40 hover:text-foreground"
-                  }
-                >
-                  {filter}
-                </button>
-              );
-            })}
+            {projectFilters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => setActiveFilter(filter)}
+                aria-pressed={activeFilter === filter}
+                className={activeFilter === filter ? "chip-accent" : "chip transition hover:border-primary/40 hover:text-foreground"}
+              >
+                {filter}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className="mb-5 flex items-center gap-2 text-xs text-muted-foreground">
           <Activity className="h-4 w-4 text-primary" />
-
-          <span>
-            Showing {filteredProjects.length} of {projects.length} projects
-          </span>
+          <span>Showing {filteredProjects.length} of {projects.length} projects</span>
         </div>
 
         {filteredProjects.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid items-start gap-5 md:grid-cols-2">
             {filteredProjects.map((project, index) => (
               <motion.article
                 key={project.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{
-                  once: true,
-                  margin: "-80px",
-                }}
-                transition={{
-                  duration: 0.45,
-                  delay: index * 0.05,
-                }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.45, delay: Math.min(index * 0.05, 0.3) }}
                 className="group relative overflow-hidden rounded-3xl border border-border bg-surface/60 p-6 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5"
               >
                 <div
-                  className="absolute -right-20 -top-20 h-48 w-48 rounded-full opacity-0 blur-3xl transition group-hover:opacity-40"
-                  style={{
-                    background: "var(--gradient-primary)",
-                  }}
+                  className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full opacity-0 blur-3xl transition group-hover:opacity-40"
+                  style={{ background: "var(--gradient-primary)" }}
                 />
 
                 <div className="relative flex h-full flex-col">
                   <div className="mb-3 flex items-center justify-between gap-3">
-                    <span className="chip-accent">
-                      <Layers className="h-3 w-3" />
-                      {project.tag}
-                    </span>
-
+                    <span className="chip-accent"><Layers className="h-3 w-3" />{project.tag}</span>
                     <span className="font-mono text-xs text-muted-foreground">
-                      QA project · {String(index + 1).padStart(2, "0")}
+                      QA project · {String(projects.indexOf(project) + 1).padStart(2, "0")}
                     </span>
                   </div>
 
-                  <h3 className="mb-2 font-display text-xl font-semibold leading-snug">
-                    {project.title}
-                  </h3>
-
+                  <h3 className="mb-2 font-display text-xl font-semibold leading-snug">{project.title}</h3>
                   <p className="text-sm leading-relaxed text-muted-foreground">{project.summary}</p>
 
-                  <div className="mt-4 rounded-xl border border-border bg-background/40 p-3 text-sm">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-
-                      <p>
-                        <span className="font-medium text-primary">Key achievement: </span>
-
-                        <span className="text-muted-foreground">{project.best}</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-3 gap-2">
-                    {project.metrics.map((metric) => (
-                      <div
-                        key={metric.label}
-                        className="rounded-lg border border-border bg-background/40 px-2 py-3 text-center"
-                      >
-                        <div className="font-display text-lg font-bold text-primary">
-                          {metric.value}
-                        </div>
-
-                        <div className="mt-0.5 text-[0.6rem] uppercase tracking-wider text-muted-foreground sm:text-[0.65rem]">
-                          {metric.label}
+                  {project.tag === "Manual" && project.deliverables ? (
+                    <>
+                      <ManualWorkflow deliverables={project.deliverables} />
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {project.tech.map((technology) => (
+                          <span key={technology} className="rounded-md border border-border bg-surface px-2 py-1 font-mono text-[0.7rem] text-muted-foreground">
+                            {technology}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mt-4 rounded-xl border border-border bg-background/40 p-3 text-sm">
+                        <div className="flex items-start gap-2">
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <p><span className="font-medium text-primary">Key achievement: </span><span className="text-muted-foreground">{project.best}</span></p>
                         </div>
                       </div>
-                    ))}
-                  </div>
 
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {project.tech.map((technology) => (
-                      <span
-                        key={technology}
-                        className="rounded-md border border-border bg-surface px-2 py-1 font-mono text-[0.7rem] text-muted-foreground"
-                      >
-                        {technology}
-                      </span>
-                    ))}
-                  </div>
+                      <div className="mt-4 grid grid-cols-3 gap-2">
+                        {project.metrics.map((metric) => (
+                          <div key={metric.label} className="rounded-lg border border-border bg-background/40 px-2 py-3 text-center">
+                            <div className="font-display text-lg font-bold text-primary">{metric.value}</div>
+                            <div className="mt-0.5 text-[0.6rem] uppercase tracking-wider text-muted-foreground sm:text-[0.65rem]">{metric.label}</div>
+                          </div>
+                        ))}
+                      </div>
 
-                  {project.links && project.links.length > 0 && (
-                    <div className="mt-auto flex flex-wrap gap-3 pt-6">
-                      {project.links.map((link) => (
-                        <a
-                          key={link.label}
-                          href={link.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-2 rounded-full border border-border bg-background/50 px-4 py-2 text-xs font-medium transition hover:border-primary/50 hover:text-primary"
-                        >
-                          {link.type === "github" ? (
-                            <Github className="h-4 w-4" />
-                          ) : (
-                            <ExternalLink className="h-4 w-4" />
-                          )}
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {project.tech.map((technology) => (
+                          <span key={technology} className="rounded-md border border-border bg-surface px-2 py-1 font-mono text-[0.7rem] text-muted-foreground">{technology}</span>
+                        ))}
+                      </div>
 
-                          {link.label}
-                        </a>
-                      ))}
-                    </div>
+                      {project.links && project.links.length > 0 && (
+                        <div className="mt-auto flex flex-wrap gap-3 pt-6">
+                          {project.links.filter((link) => !link.url.startsWith("YOUR_")).map((link) => (
+                            <a key={`${link.label}-${link.url}`} href={link.url.trim()} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-border bg-background/50 px-4 py-2 text-xs font-medium transition hover:border-primary/50 hover:text-primary">
+                              {link.type === "github" ? <Github className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+                              {link.label}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </motion.article>
@@ -1225,21 +1219,11 @@ function Projects() {
         ) : (
           <div className="rounded-3xl border border-dashed border-border bg-surface/30 px-6 py-14 text-center">
             <Layers className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
-
             <h3 className="font-display text-lg font-semibold">More projects are coming</h3>
-
             <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-              There are currently no published projects under the {activeFilter.toLowerCase()}{" "}
-              category.
+              There are currently no published projects under the {activeFilter.toLowerCase()} category.
             </p>
-
-            <button
-              type="button"
-              onClick={() => setActiveFilter("All")}
-              className="chip-accent mt-5"
-            >
-              View all projects
-            </button>
+            <button type="button" onClick={() => setActiveFilter("All")} className="chip-accent mt-5">View all projects</button>
           </div>
         )}
       </div>
@@ -1247,611 +1231,648 @@ function Projects() {
   );
 }
 
-/* ----------------- Featured Automation Project (terminal) ----------------- */
-// function FeaturedAutomationProject() {
-//   const lines = [
-//     { c: "muted", t: "# Data-Driven Test Automation Framework" },
-//     { c: "prompt", t: "$ pnpm playwright test --shard=1/4 --reporter=line" },
-//     { c: "ok", t: "✓ markets/ke › checkout › M-Pesa journey (1.4s)" },
-//     { c: "ok", t: "✓ markets/ng › checkout › Paystack journey (1.6s)" },
-//     { c: "ok", t: "✓ markets/za › checkout › card journey (1.2s)" },
-//     { c: "ok", t: "✓ markets/gh › checkout › wallet journey (1.5s)" },
-//     { c: "muted", t: "→ 4 markets × 12 personas = 48 parallel workers" },
-//     { c: "ok", t: "✓ 312 specs passed · 0 failed · 0 flaky" },
-//     { c: "prompt", t: "$ gh workflow run quality-gate.yml → ✓ merged" },
-//   ] as const;
-
-//   return (
-//     <motion.div
-//       initial={{ opacity: 0, y: 24 }}
-//       whileInView={{ opacity: 1, y: 0 }}
-//       viewport={{ once: true, margin: "-80px" }}
-//       transition={{ duration: 0.55 }}
-//       className="relative mb-10"
-//     >
-//       <div className="absolute -inset-2 rounded-4xl blur-3xl opacity-30 -z-10"
-//         style={{ background: "var(--gradient-primary)" }} />
-
-//       <div className="rounded-3xl border border-primary/30 bg-surface/70 backdrop-blur p-2 shadow-(--shadow-card)">
-//         <div className="rounded-[1.35rem] bg-background/90 overflow-hidden">
-//           {/* Title bar */}
-//           <div className="flex items-center justify-between px-5 py-3 border-b border-border">
-//             <div className="flex items-center gap-3">
-//               <div className="flex gap-1.5">
-//                 <span className="w-3 h-3 rounded-full bg-destructive/80"></span>
-//                 <span className="w-3 h-3 rounded-full bg-primary/80"></span>
-//                 <span className="w-3 h-3 rounded-full bg-success/80"></span>
-//               </div>
-//               <span className="font-mono text-xs text-muted-foreground hidden sm:inline">
-//                 ~/frameworks/data-driven-suite — zsh
-//               </span>
-//             </div>
-//             <span className="chip-accent"><Terminal className="w-3 h-3" /> Featured</span>
-//           </div>
-
-//           <div className="grid lg:grid-cols-[1.05fr_1fr]">
-//             {/* Left: terminal output */}
-//             <div className="p-6 font-mono text-[13px] leading-relaxed border-b lg:border-b-0 lg:border-r border-border">
-//               {lines.map((l, i) => (
-//                 <motion.div
-//                   key={i}
-//                   initial={{ opacity: 0, x: -8 }}
-//                   whileInView={{ opacity: 1, x: 0 }}
-//                   viewport={{ once: true }}
-//                   transition={{ delay: i * 0.05 }}
-//                   className={
-//                     l.c === "ok"
-//                       ? "text-success"
-//                       : l.c === "prompt"
-//                         ? "text-primary"
-//                         : "text-muted-foreground"
-//                   }
-//                 >
-//                   {l.t}
-//                 </motion.div>
-//               ))}
-//               <div className="mt-4 grid grid-cols-3 gap-2">
-//                 <StatCell label="markets" value="4" tone="ok" />
-//                 <StatCell label="workers" value="48" tone="warn" />
-//                 <StatCell label="regression" value="-72%" tone="ok" />
-//               </div>
-//             </div>
-
-//             {/* Right: description */}
-//             <div className="p-6 lg:p-8">
-//               <div className="flex items-center gap-2 mb-3">
-//                 <span className="chip-accent"><Layers className="w-3 h-3" />Automation · Production</span>
-//                 <span className="text-xs text-muted-foreground font-mono">case · 00</span>
-//               </div>
-//               <h3 className="text-2xl md:text-3xl font-display font-semibold leading-tight">
-//                 Data-Driven Test Automation <span className="text-gradient">Framework</span>
-//               </h3>
-
-//               <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
-//                 {[
-//                   "Architected a loop-based UI automation framework using Playwright & TypeScript to validate complex multi-market user journeys.",
-//                   "Configured parallel test execution models to maximize speed and drastically reduce regression feedback loops.",
-//                   "Seamlessly integrated the testing suite as an automated quality gate within production-level GitHub Actions CI/CD pipelines.",
-//                 ].map((p) => (
-//                   <li key={p} className="flex gap-3">
-//                     <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-//                     <span className="leading-relaxed">{p}</span>
-//                   </li>
-//                 ))}
-//               </ul>
-
-//               <div className="mt-5 flex flex-wrap gap-1.5">
-//                 {["Playwright", "TypeScript", "GitHub Actions", "Data-Driven", "Parallel Sharding", "Allure"].map((t) => (
-//                   <span key={t} className="text-[0.7rem] px-2 py-1 rounded-md bg-surface text-muted-foreground border border-border font-mono">{t}</span>
-//                 ))}
-//               </div>
-
-//               <div className="mt-6 flex flex-wrap gap-3">
-//                 <a
-//                   href="https://github.com/Stensis"
-//                   target="_blank"
-//                   rel="noreferrer"
-//                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium text-primary-foreground shadow-(--shadow-glow)"
-//                   style={{ background: "var(--gradient-primary)" }}
-//                 >
-//                   <Github className="w-4 h-4" /> View Code
-//                 </a>
-//                 <a
-//                   href="https://github.com/Stensis"
-//                   target="_blank"
-//                   rel="noreferrer"
-//                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium border border-border bg-surface hover:bg-surface-elevated transition"
-//                 >
-//                   <FileText className="w-4 h-4" /> View Test Report
-//                 </a>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </motion.div>
-//   );
-// }
-
-// function Artifacts() {
-//   const artifacts = [
-//     {
-//       icon: ClipboardCheck,
-//       title: "Test Plan",
-//       text: "Scope, risks, test approach, entry criteria, and exit criteria.",
-//       href: "/artifacts/manual-test-plan.pdf",
-//     },
-//     {
-//       icon: ListChecks,
-//       title: "Test Cases",
-//       text: "Positive, negative, and regression test cases.",
-//       href: "/artifacts/functional-test-cases.pdf",
-//     },
-//     {
-//       icon: Bug,
-//       title: "Bug Report",
-//       text: "Repro steps, expected result, actual result, severity, and evidence.",
-//       href: "/artifacts/bug-report-sample.pdf",
-//     },
-//     {
-//       icon: FileJson,
-//       title: "Postman Collection",
-//       text: "API checks for status codes, response body, and validation errors.",
-//       href: "https://github.com/Stensis",
-//     },
-//     {
-//       icon: PlayCircle,
-//       title: "Playwright Report",
-//       text: "E2E test run with browser results and failure evidence.",
-//       href: "/artifacts/playwright-report/index.html",
-//     },
-//     {
-//       icon: BarChart3,
-//       title: "Load Test Report",
-//       text: "Basic performance report with response time and failed requests.",
-//       href: "/artifacts/performance-test-report.pdf",
-//     },
-//   ];
-
-//   return (
-//     <section id="artifacts" className="py-20 lg:py-28">
-//       <div className="container-page">
-//         <SectionHeader
-//           eyebrow="Artifacts"
-//           title={
-//             <>
-//               Simple QA <span className="text-gradient">proof</span>
-//             </>
-//           }
-//           subtitle="Documents and reports that show how I plan, test, report, and automate."
-//         />
-
-//         <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-//           {artifacts.map(({ icon: Icon, title, text, href }, index) => (
-//             <motion.a
-//               key={title}
-//               href={href}
-//               target="_blank"
-//               rel="noreferrer"
-//               initial={{ opacity: 0, y: 14 }}
-//               whileInView={{ opacity: 1, y: 0 }}
-//               viewport={{ once: true, margin: "-60px" }}
-//               transition={{ duration: 0.35, delay: index * 0.04 }}
-//               className="group rounded-3xl border border-border bg-surface/60 p-6 transition hover:border-primary/40 hover:bg-surface-elevated"
-//             >
-//               <div className="mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
-//                 <Icon className="h-5 w-5" />
-//               </div>
-
-//               <h3 className="font-display text-lg font-semibold">{title}</h3>
-
-//               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-//                 {text}
-//               </p>
-
-//               <div className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-primary">
-//                 Open artifact <ArrowUpRight className="h-4 w-4" />
-//               </div>
-//             </motion.a>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
-/* --------------------------- Experience --------------------------- */
-
+/* ---------------- Experience, Education & Certifications ---------------- */
 function Experience() {
-  const timeline = [
+  const professionalExperience = [
     {
-      year: "2025 — Present",
-      type: "Independent Projects",
-      role: "Quality Assurance | Independent Projects",
-      org: "Hands-on QA Practice & Professional Development",
-      points: [
-        "Designing and executing manual test cases covering functional, smoke, regression, exploratory, and negative testing scenarios.",
-        "Preparing test plans, Requirements Traceability Matrices (RTMs), test execution reports, and structured defect documentation.",
-        "Developing reusable Playwright automation suites using TypeScript, Page Object Model patterns, and data-driven testing.",
-        "Testing REST APIs using Postman and Newman, validating authentication, response payloads, status codes, and error handling.",
-        "Applying defect management practices to identify, reproduce, document, prioritize, and retest defects.",
-        "Applying test design techniques, including Boundary Value Analysis and Equivalence Partitioning.",
-      ],
-      projectLink: "#projects",
-    },
-    {
-      year: "Present",
-      type: "Education & Training",
-      role: "Full Stack QA Engineering — Part-Time",
-      org: "Kiwami School | Ongoing",
-      points: [
-        "Undertaking structured training in software quality assurance, covering manual testing, software testing fundamentals, and the Software Testing Life Cycle (STLC).",
-        "Learning requirements analysis, test planning, test scenario design, test case development, and Requirements Traceability Matrices (RTMs).",
-        "Practicing functional, regression, smoke, exploratory, positive, and negative testing.",
-        "Applying test design techniques, including Equivalence Partitioning, Boundary Value Analysis, and checklist-based testing.",
-        "Learning defect lifecycle management, severity and priority classification, bug reporting, and QA reporting.",
-        "Working with Agile/Scrum practices, Jira workflows, Sprint planning, and test documentation.",
+      period: "Jan 2026 – Apr 2026",
+      role: "Software Engineer – QA & Test Automation",
+      organization: "GoChapaa | Web3",
+      location: "Remote",
+      category: "Quality Assurance",
+      description:
+        "Focused on software quality, test execution, defect prevention, and release validation across fintech and Web3 applications.",
+      achievements: [
+        "Designed and executed functional, regression, smoke, exploratory, UI, integration, and end-to-end test scenarios.",
+        "Validated authentication, payments, transactions, REST APIs, forms, and error-handling workflows.",
+        "Reviewed requirements and user stories to identify risks, edge cases, and acceptance gaps; maintained test cases, checklists, and RTMs.",
+        "Tested REST APIs using Postman and browser DevTools, validating authentication, status codes, response payloads, and negative scenarios.",
+        "Documented defects with reproduction steps, severity, expected and actual results, screenshots, and supporting evidence.",
+        "Collaborated with developers to reproduce issues, verify fixes, and support regression and release testing.",
       ],
     },
     {
-      year: "2023 — 2026",
-      type: "Professional Experience",
-      role: "Software Engineer",
-      org: "Remote Product Teams | Fintech & Web Applications",
-      points: [
-        "Developed and maintained web and mobile applications using React, React Native, TypeScript, and REST APIs.",
-        "Participated in feature validation, defect investigation, and troubleshooting before and after software releases.",
-        "Used Postman and browser developer tools to inspect API requests, validate responses, and investigate integration issues.",
-        "Collaborated with engineering teams to reproduce defects, identify root causes, and verify fixes.",
-        "Worked within Agile development processes, contributing to Sprint planning, feature delivery, and production support.",
+      period: "May 2024 – Dec 2025",
+      role: "Software Engineer – Frontend",
+      organization: "GoChapaa | Web3",
+      location: "Remote",
+      category: "Software Engineering",
+      description:
+        "Developed and maintained responsive web and mobile applications for fintech and Web3 products.",
+      achievements: [
+        "Built web and mobile applications using React, React Native, Next.js, JavaScript, and TypeScript.",
+        "Developed reusable UI components with attention to responsiveness, accessibility, and usability.",
+        "Integrated REST APIs and payment services including M-Pesa and OCTET, implementing authentication, validation, and error handling.",
+        "Investigated frontend and integration issues using browser DevTools, application logs, and API responses.",
+        "Collaborated with backend engineers, designers, and product stakeholders to resolve defects and deliver production-ready features.",
+        "Supported CI/CD and production deployments using GitHub Actions, AWS EC2, and CloudFront.",
       ],
     },
     {
-      year: "2022",
-      type: "Education & Training",
-      role: "Full-Stack Software Engineering Bootcamp",
-      org: "Moringa School",
-      points: [
-        "Completed a full-stack software engineering program covering JavaScript, React, Ruby on Rails, PostgreSQL, Git, and Agile development.",
-        "Built collaborative software projects, gaining practical experience in application development, debugging, and deployment.",
+      period: "Feb 2024 – May 2024",
+      role: "Software Engineer – Frontend",
+      organization: "Paya",
+      location: "Remote",
+      category: "Software Engineering",
+      description:
+        "Developed and validated fintech application features, payment integrations, and mobile user experiences.",
+      achievements: [
+        "Integrated and validated payment APIs including Pngme, Paystack, and M-Pesa.",
+        "Tested loan application workflows, payment interactions, forms, and responsive mobile interfaces.",
+        "Investigated API integration issues using response data and application logs.",
+        "Built reusable React Native components and supported mobile application reliability.",
+        "Automated frontend deployment workflows using GitHub Actions.",
+      ],
+    },
+    {
+      period: "Dec 2023 – Feb 2024",
+      role: "Software Developer Intern",
+      organization: "myNgovo",
+      location: "Part-time",
+      category: "Internship",
+      description:
+        "Developed and tested a responsive web application from initial implementation to deployment.",
+      achievements: [
+        "Built and tested responsive web application features.",
+        "Validated functionality across browsers and devices and resolved usability issues.",
+        "Managed deployment using cPanel and delivered the MVP within the required timeline.",
+      ],
+    },
+    {
+      period: "Sep 2023 – Nov 2023",
+      role: "Frontend Software Developer Intern",
+      organization: "HNG",
+      location: "Nigeria | Remote Collaboration",
+      category: "Internship",
+      description:
+        "Contributed to frontend development and testing within a collaborative remote engineering environment.",
+      achievements: [
+        "Built and tested responsive user interfaces using React and Tailwind CSS.",
+        "Collaborated through GitHub, Slack, sprint planning, stand-ups, and code reviews.",
+        "Improved application usability and cross-device compatibility.",
       ],
     },
   ];
 
-  const certs = [
+  const education = [
     {
-      t: "ISTQB Certified Tester Foundation Level (CTFL v4.0)",
-      status: "Completed",
-      d: "Certified in software testing fundamentals, test analysis and design, test levels and types, defect management, test planning, and risk-based testing.",
-      url: "/certificates/ISTQB-CTFL-v4.pdf",
+      period: "Jul 2026 – Present",
+      program: "Fullstack QA Bootcamp",
+      institution: "Kiwami School",
+      location: "Part-time",
+      status: "Ongoing",
+      description:
+        "Practical training in manual software testing, STLC, requirements analysis, test planning, test design, defect management, Agile testing, API testing, and Playwright automation.",
+      skills: [
+        "Manual Testing",
+        "Test Planning",
+        "RTM",
+        "Test Case Design",
+        "Defect Management",
+      ],
     },
     {
-      t: "Postman API Fundamentals",
+      period: "May 2022 – Nov 2022",
+      program: "Full-Stack Software Engineering Bootcamp",
+      institution: "Moringa School",
+      location: "Nairobi, Kenya",
       status: "Completed",
-      d: "REST API testing, collections, environments, authentication, and response validation.",
-      // url: "/certificates/Postman-API-Fundamentals.pdf",
+      description:
+        "Intensive software engineering training covering frontend and backend development, React, Ruby, REST APIs, Git, Linux, SDLC, and Agile practices.",
+      skills: [
+        "React",
+        "Ruby",
+        "REST APIs",
+        "Git",
+        "Agile",
+      ],
     },
     {
-      t: "AWS Certified Cloud Practitioner",
+      period: "Sep 2017 – Apr 2022",
+      program: "Bachelor of Science in Fashion Design and Marketing",
+      institution: "Machakos University",
+      location: "Machakos, Kenya",
       status: "Completed",
-      d: "Cloud fundamentals, security, cloud architecture, and AWS services.",
-      // url: "/certificates/AWS-Certified-Cloud-Practitioner.pdf",
-    },
-    {
-      t: "AI Fundamentals",
-      status: "Completed",
-      d: "Artificial intelligence concepts and practical applications.",
-      // url: "/certificates/AI-Fundamentals.pdf",
+      description:
+        "Graduated with Second Class Upper Division honours.",
+      skills: [],
     },
   ];
 
-  const strengths = [
+  const certifications = [
     {
-      icon: Code2,
-      title: "Engineering Background",
-      description:
-        "Over three years of software engineering experience, providing a strong understanding of application architecture, APIs, and debugging.",
+      title: "ISTQB Certified Tester – Foundation Level (CTFL v4.0)",
+      provider: "ISTQB",
+      date: "Oct 2026",
+      url: "https://drive.google.com/file/d/19s7_MVjsym-eFTjQ_pq5xf6NY4vf6P3x/view?usp=sharing",
+      featured: true,
     },
     {
-      icon: TestTube2,
-      title: "Structured QA Approach",
-      description:
-        "Applying requirements analysis, test planning, test case design, traceability, and defect management to improve software quality.",
+      title: "Introduction to Software Testing Program",
+      provider: "Kiwami Tech Solutions Ltd",
+      date: "Sep 2026",
+      url: "",
+      featured: true,
     },
     {
-      icon: GitBranch,
-      title: "Manual + Automated Testing",
-      description:
-        "Combining manual, exploratory, and functional testing with maintainable Playwright automation and regression testing.",
+      title: "Postman API Fundamentals Student Expert",
+      provider: "Postman",
+      date: "Jan 2024",
+      url: "",
+      featured: true,
     },
     {
-      icon: Database,
-      title: "End-to-End Understanding",
-      description:
-        "Comfortable investigating frontend behavior, API responses, integrations, and database-related issues.",
+      title: "AWS Certified Cloud Practitioner",
+      provider: "Amazon Web Services",
+      date: "Aug 2025",
+      url: "",
+      featured: true,
+    },
+    {
+      title: "AI Fundamentals & Applied Artificial Intelligence",
+      provider: "Moringa School",
+      date: "Nov 2025",
+      url: "",
+      featured: false,
+    },
+    {
+      title: "React Learning Program",
+      provider: "Andela",
+      date: "Nov 2023",
+      url: "",
+      featured: false,
+    },
+    {
+      title: "Oracle Cloud Infrastructure Associate",
+      provider: "Oracle",
+      date: "May 2023",
+      url: "",
+      featured: false,
+    },
+    {
+      title: "TypeScript in a Nutshell",
+      provider: "Microsoft",
+      date: "Jan 2023",
+      url: "",
+      featured: false,
     },
   ];
+
+  const [showAllExperience, setShowAllExperience] =
+    useState(false);
+
+  const [showAllCertifications, setShowAllCertifications] =
+    useState(false);
+
+  const visibleExperience = showAllExperience
+    ? professionalExperience
+    : professionalExperience.slice(0, 3);
+
+  const visibleCertifications = showAllCertifications
+    ? certifications
+    : certifications.filter((cert) => cert.featured);
 
   return (
-    <section id="experience" className="py-16 lg:py-20">
+    <section
+      id="experience"
+      className="scroll-mt-24 py-16 lg:py-20"
+    >
       <div className="container-page">
 
-        {/* Section Heading */}
+        {/* Main Section Heading */}
         <SectionHeader
           eyebrow="Experience & Education"
           title={
             <>
-              From Software Engineering to{" "}
+              My journey from{" "}
               <span className="text-gradient">
-                Quality Assurance
+                Software Engineering to QA
               </span>
             </>
           }
-          subtitle="Combining over three years of software engineering experience, ISTQB CTFL v4.0 certification, ongoing Full Stack QA Engineering training, and hands-on manual and automated testing projects."
+          subtitle="Professional experience in fintech and Web3, supported by hands-on software testing, automation projects, formal training, and certifications."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6 mt-10 items-start">
+        <div className="mt-10 grid grid-cols-1 items-start gap-8 lg:grid-cols-[1.3fr_1fr]">
 
-          {/* LEFT: Experience Timeline */}
-          <div className="space-y-4">
-            {timeline.map((t) => (
-              <div
-                key={`${t.role}-${t.org}`}
-                className="relative rounded-2xl border border-border bg-surface/60 p-5 sm:p-6 hover:border-primary/30 transition-colors"
-              >
+          {/* LEFT: Professional Experience */}
+          <div>
 
-                {/* Role and Date */}
-                <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-                  <h3 className="font-display font-semibold text-lg">
-                    {t.role}
-                  </h3>
-
-                  <span className="text-xs font-mono text-primary whitespace-nowrap">
-                    {t.year}
-                  </span>
-                </div>
-
-                {/* Experience Category */}
-                <span className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-3">
-                  {t.type}
-                </span>
-
-                {/* Organization */}
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t.org}
-                </p>
-
-                {/* Responsibilities */}
-                <ul className="space-y-3">
-                  {t.points.map((p) => (
-                    <li
-                      key={p}
-                      className="text-sm text-muted-foreground flex items-start gap-3 leading-relaxed"
-                    >
-                      <CheckCircle2 className="w-4 h-4 mt-0.5 text-primary shrink-0" />
-
-                      <span>{p}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* QA Projects Link */}
-                {"projectLink" in t && t.projectLink && (
-                  <a
-                    href={t.projectLink}
-                    className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-                  >
-                    View QA Projects & Test Documentation
-                    <ArrowUpRight className="w-4 h-4" />
-                  </a>
-                )}
-
+            {/* Heading */}
+            <div className="mb-5 flex items-center gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                <Briefcase className="h-5 w-5" />
               </div>
-            ))}
+
+              <div>
+                <h3 className="font-display text-lg font-semibold">
+                  Professional Experience
+                </h3>
+
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Fintech • Web3 • QA • Frontend Engineering
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+
+              {visibleExperience.map((item) => (
+                <article
+                  key={`${item.organization}-${item.role}-${item.period}`}
+                  className="rounded-2xl border border-border bg-surface/60 p-5 transition-colors hover:border-primary/40 sm:p-6"
+                >
+
+                  {/* Date and Category */}
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                    <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 font-mono text-xs text-primary">
+                      {item.period}
+                    </span>
+
+                    <span className="text-xs text-muted-foreground">
+                      {item.category}
+                    </span>
+                  </div>
+
+                  {/* Job Title */}
+                  <h4 className="font-display text-lg font-semibold leading-snug">
+                    {item.role}
+                  </h4>
+
+                  {/* Organization */}
+                  <p className="mt-2 text-sm font-medium text-primary">
+                    {item.organization}
+                  </p>
+
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {item.location}
+                  </p>
+
+                  {/* Role Summary */}
+                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                    {item.description}
+                  </p>
+
+                  {/* Divider */}
+                  <div className="my-4 border-t border-border" />
+
+                  {/* Achievements */}
+                  <ul className="space-y-3">
+                    {item.achievements.map((point) => (
+                      <li
+                        key={point}
+                        className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground"
+                      >
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                </article>
+              ))}
+
+            </div>
+
+            {/* View More Experience */}
+            {professionalExperience.length > 3 && (
+              <button
+                type="button"
+                onClick={() =>
+                  setShowAllExperience((previous) => !previous)
+                }
+                aria-expanded={showAllExperience}
+                className="mt-5 w-full rounded-xl border border-border bg-surface/60 px-5 py-3 text-sm font-medium transition hover:border-primary/50 hover:text-primary"
+              >
+                {showAllExperience
+                  ? "Show Less Experience"
+                  : "View Earlier Experience"}
+              </button>
+            )}
+
+            {/* Independent QA Projects */}
+            <div className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-5 sm:p-6">
+
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <h4 className="font-display text-lg font-semibold">
+                  Independent QA Projects
+                </h4>
+
+                <span className="text-xs text-primary">
+                  Self-Directed Practice
+                </span>
+              </div>
+
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                In addition to my professional experience, I
+                develop QA projects demonstrating manual testing,
+                test planning, requirements traceability, defect
+                reporting, Playwright automation, and REST API
+                testing using Postman and Newman.
+              </p>
+
+              <a
+                href="#projects"
+                className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary transition hover:gap-3"
+              >
+                Explore My QA Projects
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
+            </div>
+
           </div>
 
-          {/* RIGHT: Certifications & Strengths */}
-          <div className="space-y-4">
+          {/* RIGHT: Education and Certifications */}
+          <div className="space-y-6">
+
+            {/* Education Section */}
+            <div>
+              <div className="mb-5 flex items-center gap-3">
+                <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <TestTube2 className="h-5 w-5" />
+                </div>
+
+                <div>
+                  <h3 className="font-display text-lg font-semibold">
+                    Education & Training
+                  </h3>
+
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Academic qualifications and professional learning
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+
+                {education.map((item) => (
+                  <article
+                    key={item.program}
+                    className="rounded-2xl border border-border bg-surface/60 p-5 transition-colors hover:border-primary/40"
+                  >
+
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <span className="text-xs font-mono text-primary">
+                        {item.period}
+                      </span>
+
+                      <span className="rounded-full border border-border bg-background/40 px-2.5 py-1 text-[10px] text-muted-foreground">
+                        {item.status}
+                      </span>
+                    </div>
+
+                    <h4 className="mt-3 font-display text-base font-semibold">
+                      {item.program}
+                    </h4>
+
+                    <p className="mt-2 text-sm font-medium text-primary">
+                      {item.institution}
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {item.location}
+                    </p>
+
+                    <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                      {item.description}
+                    </p>
+
+                    {item.skills.length > 0 && (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {item.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="rounded-md border border-border bg-background/40 px-2.5 py-1 text-xs text-muted-foreground"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                  </article>
+                ))}
+
+              </div>
+            </div>
 
             {/* Certifications */}
             <div className="rounded-2xl border border-border bg-surface/60 p-5 sm:p-6">
 
-              <h3 className="font-display font-semibold mb-5 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-primary" />
-                Certifications & Learning
-              </h3>
+              <div className="mb-5 flex items-center gap-3">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+
+                <div>
+                  <h3 className="font-display text-lg font-semibold">
+                    Certifications
+                  </h3>
+
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Professional certifications and completed learning programs
+                  </p>
+                </div>
+              </div>
 
               <div className="space-y-3">
-                {certs.map((c) => (
+
+                {visibleCertifications.map((cert) => (
                   <div
-                    key={c.t}
-                    className="rounded-xl border border-border bg-background/40 p-4 hover:border-primary/30 transition-colors"
+                    key={cert.title}
+                    className="rounded-xl border border-border bg-background/40 p-4 transition-colors hover:border-primary/30"
                   >
 
-                    {/* Name and Status */}
-                    <div className="flex flex-wrap items-start justify-between gap-2">
-                      <h4 className="font-medium text-sm flex-1">
-                        {c.t}
-                      </h4>
+                    <div className="flex items-start gap-3">
 
-                      <span
-                        className={`text-[10px] rounded-full border px-2 py-1 whitespace-nowrap ${
-                          c.status === "Completed"
-                            ? "text-success border-success/30 bg-success/10"
-                            : "text-primary border-primary/30 bg-primary/10"
-                        }`}
-                      >
-                        {c.status}
-                      </span>
+                      <div className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-success/10 text-success">
+                        <CheckCircle2 className="h-4 w-4" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+
+                        <h4 className="text-sm font-semibold leading-relaxed">
+                          {cert.title}
+                        </h4>
+
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {cert.provider}
+                        </p>
+
+                        <p className="mt-2 text-xs text-primary">
+                          {cert.date}
+                        </p>
+
+                        {cert.url && (
+                          <a
+                            href={cert.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-3 inline-flex items-center gap-2 text-xs font-medium text-primary hover:underline"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            View Certificate
+                          </a>
+                        )}
+
+                      </div>
                     </div>
-
-                    {/* Description */}
-                    <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                      {c.d}
-                    </p>
-
-                    {/* View Certificate */}
-                    {c.url && (
-                      <a
-                        href={c.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        View Certificate
-                      </a>
-                    )}
 
                   </div>
                 ))}
-              </div>
-            </div>
 
-            {/* Professional Strengths */}
-            <div className="rounded-2xl border border-border bg-surface/60 p-5 sm:p-6">
-
-              <h3 className="font-display font-semibold mb-5 flex items-center gap-2">
-                <Cpu className="w-5 h-5 text-primary" />
-                What I Bring to QA Teams
-              </h3>
-
-              <div className="space-y-5">
-                {strengths.map(({ icon: Icon, title, description }) => (
-                  <div
-                    key={title}
-                    className="flex items-start gap-3"
-                  >
-                    <Icon className="w-4 h-4 text-primary mt-1 shrink-0" />
-
-                    <div>
-                      <h4 className="text-sm font-semibold">
-                        {title}
-                      </h4>
-
-                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                        {description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
               </div>
 
+              {/* Expand Other Certifications */}
+              <button
+                type="button"
+                onClick={() =>
+                  setShowAllCertifications((previous) => !previous)
+                }
+                aria-expanded={showAllCertifications}
+                className="mt-5 w-full rounded-xl border border-border bg-background/40 px-4 py-3 text-sm font-medium transition hover:border-primary/40 hover:text-primary"
+              >
+                {showAllCertifications
+                  ? "Show Fewer Certifications"
+                  : "View All 8 Certifications"}
+              </button>
+
             </div>
+
           </div>
         </div>
+
       </div>
     </section>
   );
 }
 
 /* ------------------------------- FAQ ------------------------------- */
-function FAQ() {
-  const items = [
-    {
-      q: "Are you a junior QA or an experienced engineer?",
-      a: "I'm a QA Automation Engineer with over three years of software engineering experience and I'm transitioning into a dedicated Quality Assurance career. My development background helps me understand application architecture, collaborate effectively with developers, and build reliable automated tests.",
-    },
-    {
-      q: "What testing methodologies do you specialize in?",
-      a: "I specialize in manual testing, exploratory testing, API testing, and end-to-end automation using Playwright. I also perform regression testing, bug reporting, and validate application behavior across different browsers and user scenarios.",
-    },
-    {
-      q: "Do you write custom automation scripts?",
-      a: "Yes. I write Playwright automation tests using TypeScript, build reusable test utilities, create data-driven test cases, validate APIs with Postman, and integrate tests into GitHub workflows.",
-    },
-    {
-      q: "Which testing tools do you use?",
-      a: "My primary tools include Playwright, Postman, GitHub Actions, Chrome DevTools, Git, and TypeScript. I also have experience working with REST APIs and modern frontend applications.",
-    },
-    {
-      q: "Why did you move from software engineering to QA?",
-      a: "While building software, I found myself naturally focusing on testing, edge cases, and preventing issues before they reached users. Transitioning into QA allowed me to combine my development experience with my passion for improving software quality.",
-    },
-    {
-      q: "Can you contribute to improving a team's QA process?",
-      a: "Yes. I enjoy working closely with developers and product teams to create effective test plans, improve bug reporting, automate repetitive regression tests, and help maintain software quality throughout development.",
-    },
-    {
-      q: "What roles are you looking for?",
-      a: "I'm open to QA Automation Engineer, QA Engineer, Software Test Engineer, and Junior SDET opportunities. I'm available for remote, hybrid, or onsite roles and enjoy collaborating with distributed teams.",
-    },
-    {
-      q: "Do you still write production code?",
-      a: "Yes, when needed. My software engineering background helps me understand code, contribute to automation frameworks, and communicate effectively with developers. My primary focus, however, is building quality through testing and automation.",
-    },
-  ];
+// function FAQ() {
+//   const items = [
+//     {
+//       q: "Are you a junior QA or an experienced engineer?",
+//       a: "I'm a QA Automation Engineer with over three years of software engineering experience and I'm transitioning into a dedicated Quality Assurance career. My development background helps me understand application architecture, collaborate effectively with developers, and build reliable automated tests.",
+//     },
+//     {
+//       q: "What testing methodologies do you specialize in?",
+//       a: "I specialize in manual testing, exploratory testing, API testing, and end-to-end automation using Playwright. I also perform regression testing, bug reporting, and validate application behavior across different browsers and user scenarios.",
+//     },
+//     {
+//       q: "Do you write custom automation scripts?",
+//       a: "Yes. I write Playwright automation tests using TypeScript, build reusable test utilities, create data-driven test cases, validate APIs with Postman, and integrate tests into GitHub workflows.",
+//     },
+//     {
+//       q: "Which testing tools do you use?",
+//       a: "My primary tools include Playwright, Postman, GitHub Actions, Chrome DevTools, Git, and TypeScript. I also have experience working with REST APIs and modern frontend applications.",
+//     },
+//     {
+//       q: "Why did you move from software engineering to QA?",
+//       a: "While building software, I found myself naturally focusing on testing, edge cases, and preventing issues before they reached users. Transitioning into QA allowed me to combine my development experience with my passion for improving software quality.",
+//     },
+//     {
+//       q: "Can you contribute to improving a team's QA process?",
+//       a: "Yes. I enjoy working closely with developers and product teams to create effective test plans, improve bug reporting, automate repetitive regression tests, and help maintain software quality throughout development.",
+//     },
+//     {
+//       q: "What roles are you looking for?",
+//       a: "I'm open to QA Automation Engineer, QA Engineer, Software Test Engineer, and Junior SDET opportunities. I'm available for remote, hybrid, or onsite roles and enjoy collaborating with distributed teams.",
+//     },
+//     {
+//       q: "Do you still write production code?",
+//       a: "Yes, when needed. My software engineering background helps me understand code, contribute to automation frameworks, and communicate effectively with developers. My primary focus, however, is building quality through testing and automation.",
+//     },
+//   ];
 
-  return (
-    <section id="faqs" className="py-20 lg:py-28">
-      <div className="container-page">
-        <SectionHeader
-          eyebrow="FAQ"
-          title={
-            <>
-              Common <span className="text-gradient">questions</span>
-            </>
-          }
-          subtitle="The things hiring managers and engineering leads usually want to know."
-        />
-        <div className="grid md:grid-cols-2 gap-4 mt-12">
-          {items.map((f) => (
-            <details
-              key={f.q}
-              className="group rounded-2xl border border-border bg-surface/60 p-5 open:bg-surface-elevated"
-            >
-              <summary className="cursor-pointer list-none flex items-start justify-between gap-4">
-                <span className="font-display font-semibold">{f.q}</span>
-                <span className="grid place-items-center w-6 h-6 rounded-full border border-border text-primary text-sm group-open:rotate-45 transition">
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+//   return (
+//     <section id="faqs" className="py-20 lg:py-28">
+//       <div className="container-page">
+//         <SectionHeader
+//           eyebrow="FAQ"
+//           title={
+//             <>
+//               Common <span className="text-gradient">questions</span>
+//             </>
+//           }
+//           subtitle="The things hiring managers and engineering leads usually want to know."
+//         />
+//         <div className="grid md:grid-cols-2 gap-4 mt-12">
+//           {items.map((f) => (
+//             <details
+//               key={f.q}
+//               className="group rounded-2xl border border-border bg-surface/60 p-5 open:bg-surface-elevated"
+//             >
+//               <summary className="cursor-pointer list-none flex items-start justify-between gap-4">
+//                 <span className="font-display font-semibold">{f.q}</span>
+//                 <span className="grid place-items-center w-6 h-6 rounded-full border border-border text-primary text-sm group-open:rotate-45 transition">
+//                   +
+//                 </span>
+//               </summary>
+//               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{f.a}</p>
+//             </details>
+//           ))}
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
 /* ----------------------------- Contact ----------------------------- */
 
 function Contact() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-    setIsSubmitting(true);
+
+    if (isSubmitting) return;
 
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    try {
-      const response = await fetch("https://formspree.io/f/xnqrjvoe", {
-        method: "POST",
-        body: data,
-        headers: {
-          Accept: "application/json",
-        },
-      });
+    setIsSubmitting(true);
+    setSubmitError("");
 
-      if (response.ok) {
-        setIsSubmitted(true);
-        form.reset();
-      } else {
-        alert("Submission failed. Please verify fields or try again.");
+    try {
+      const response = await fetch(
+        "https://formspree.io/f/xnqrjvoe",
+        {
+          method: "POST",
+          body: data,
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        setSubmitError(
+          "Your message could not be sent. Please try again or contact me directly by email."
+        );
+        return;
       }
-    } catch (error) {
-      alert("Network exception caught. Please email directly or try again later.");
+
+      form.reset();
+      setIsSubmitted(true);
+    } catch {
+      setSubmitError(
+        "A network error occurred. Please check your connection or contact me directly by email."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <section id="contact" className="py-20 lg:py-28">
+    <section
+      id="contact"
+      className="scroll-mt-24 py-16 lg:py-20"
+    >
       <div className="container-page">
+
+        {/* Section Heading */}
         <SectionHeader
           eyebrow="Contact"
           title={
@@ -1859,127 +1880,242 @@ function Contact() {
               Let's <span className="text-gradient">connect</span>
             </>
           }
-          subtitle="I'm open to QA Engineer, QA Automation, and Software Test Engineer opportunities. Whether you're hiring for a full-time role, freelance project, or contract engagement, I'd love to hear from you."
+          subtitle="I'm open to QA Engineer, QA Automation Engineer, and Software Test Engineer opportunities. Feel free to reach out about roles, projects, or collaborations."
         />
 
-        <div className="grid lg:grid-cols-[1fr_1.2fr] gap-5 mt-12">
-          <div className="space-y-3">
+        <div className="mt-10 grid grid-cols-1 items-start gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+
+          {/* LEFT: Contact Information */}
+          <div className="space-y-4">
+
+            <div className="mb-6">
+              <h3 className="font-display text-xl font-semibold">
+                Get in touch
+              </h3>
+
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Interested in working together? You can contact
+                me directly or send a message using the form.
+              </p>
+            </div>
+
             <ContactCard
               icon={Mail}
               label="Email"
-              sub="Best way to reach me"
+              sub="Preferred contact method"
               value="irenenjuguna98@gmail.com"
               href="mailto:irenenjuguna98@gmail.com"
             />
+
             <ContactCard
               icon={Phone}
               label="Phone"
-              sub="Call or WhatsApp"
+              sub="Calls and WhatsApp"
               value="+254 791 798 403"
               href="tel:+254791798403"
             />
+
             <ContactCard
               icon={MapPin}
               label="Location"
-              sub="Based in Nairobi, available remotely"
+              sub="Open to remote and hybrid opportunities"
               value="Nairobi, Kenya"
-              href="#"
             />
 
-            <div className="rounded-2xl border border-border bg-surface/60 p-5">
-              <div className="text-sm font-display font-semibold mb-3">Engagement Presets</div>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "QA Engineer Role",
-                  "QA Automation Opportunity",
-                  "Freelance Testing",
-                  "Technical Interview",
-                  "General Inquiry",
-                ].map((s) => (
-                  <span key={s} className="chip hover:text-primary transition">
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+            {/* Availability */}
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <div className="flex items-center gap-3">
+                <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-success" />
 
-          {/* Conditional Rendering for Clean Success State */}
-          {isSubmitted ? (
-            <div className="rounded-3xl border border-success/30 bg-success/5 p-8 flex flex-col items-center justify-center text-center min-h-100">
-              <div className="w-12 h-12 rounded-full bg-success/20 text-success grid place-items-center mb-4">
-                <CheckCircle className="w-6 h-6" />
-              </div>
-              <h4 className="font-display font-semibold text-lg mb-2">Message Received!</h4>
-              <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-                Thank you for reaching out! Your message has been received, and I'll respond as soon
-                as I can.
-              </p>
-              <button
-                onClick={() => setIsSubmitted(false)}
-                className="mt-6 text-xs text-primary hover:underline font-medium"
-              >
-                Send another message
-              </button>
-            </div>
-          ) : (
-            <form
-              className="rounded-3xl border border-border bg-surface/60 p-6 lg:p-8"
-              onSubmit={handleSubmit}
-            >
-              <div className="grid sm:grid-cols-2 gap-4">
-                <Field label="Name" name="name" placeholder="Jane Doe" required />
-                <Field
-                  label="Email"
-                  name="email"
-                  placeholder="you@company.com"
-                  type="email"
-                  required
-                />
-              </div>
-              <div className="mt-4">
-                <Field
-                  label="Subject"
-                  name="subject"
-                  placeholder="Job opportunity, freelance project, or collaboration"
-                  required
-                />
-              </div>
-              <div className="mt-4">
-                <label className="text-sm font-medium block mb-2">Message Context</label>
-                <textarea
-                  name="message"
-                  rows={6}
-                  placeholder="Tell me about the opportunity, project, or reason for reaching out..."
-                  className="w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
-                  required
-                />
-                <div className="text-xs text-muted-foreground mt-1">
-                  Tip: Feel free to include a job description, project details, or relevant links.
+                <div>
+                  <h4 className="text-sm font-semibold">
+                    Open to QA Opportunities
+                  </h4>
+
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    Available for full-time, remote, hybrid,
+                    and contract QA roles.
+                  </p>
                 </div>
               </div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="mt-6 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-medium text-primary-foreground shadow-(--shadow-glow) disabled:opacity-50 dynamic-transition"
-                style={{ background: "var(--gradient-primary)" }}
+            </div>
+
+          </div>
+
+          {/* RIGHT: Contact Form */}
+          <div>
+            {isSubmitted ? (
+
+              /* Success State */
+              <div
+                role="status"
+                className="flex min-h-[420px] flex-col items-center justify-center rounded-3xl border border-success/30 bg-success/5 p-8 text-center"
               >
-                {isSubmitting ? "Sending..." : "Send message"} <Send className="w-4 h-4" />
-              </button>
-              <div className="mt-4 text-xs text-muted-foreground">
-                Direct fallback:{" "}
-                <a href="mailto:irenenjuguna98@gmail.com" className="text-primary hover:underline">
-                  irenenjuguna98@gmail.com
-                </a>
+                <div className="mb-5 grid h-14 w-14 place-items-center rounded-full bg-success/15 text-success">
+                  <CheckCircle className="h-7 w-7" />
+                </div>
+
+                <h3 className="font-display text-xl font-semibold">
+                  Message Sent Successfully!
+                </h3>
+
+                <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                  Thank you for reaching out. Your message has
+                  been submitted successfully.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSubmitted(false);
+                    setSubmitError("");
+                  }}
+                  className="mt-6 rounded-full border border-border bg-surface px-5 py-2.5 text-sm font-medium transition hover:border-primary/40 hover:text-primary"
+                >
+                  Send Another Message
+                </button>
               </div>
-            </form>
-          )}
+
+            ) : (
+
+              /* Contact Form */
+              <form
+                onSubmit={handleSubmit}
+                className="rounded-3xl border border-border bg-surface/60 p-6 sm:p-8"
+              >
+
+                <div className="mb-6">
+                  <h3 className="font-display text-xl font-semibold">
+                    Send a message
+                  </h3>
+
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Fill in the details below and I'll get
+                    back to you when possible.
+                  </p>
+                </div>
+
+                {/* Name and Email */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
+                  <Field
+                    label="Full Name"
+                    name="name"
+                    placeholder="Jane Doe"
+                    autoComplete="name"
+                    required
+                  />
+
+                  <Field
+                    label="Email Address"
+                    name="email"
+                    type="email"
+                    placeholder="you@company.com"
+                    autoComplete="email"
+                    required
+                  />
+
+                </div>
+
+                {/* Subject */}
+                <div className="mt-5">
+                  <Field
+                    label="Subject"
+                    name="subject"
+                    placeholder="QA Engineer opportunity"
+                    required
+                  />
+                </div>
+
+                {/* Message */}
+                <div className="mt-5">
+
+                  <label
+                    htmlFor="contact-message"
+                    className="mb-2 block text-sm font-medium"
+                  >
+                    Your Message
+                  </label>
+
+                  <textarea
+                    id="contact-message"
+                    name="message"
+                    rows={6}
+                    placeholder="Tell me about the role, project, or reason for reaching out..."
+                    required
+                    className="w-full resize-y rounded-xl border border-border bg-background/60 px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                  />
+                </div>
+
+                {/* Hidden honeypot field for spam filtering */}
+                <div
+                  className="absolute -left-[9999px]"
+                  aria-hidden="true"
+                >
+                  <label htmlFor="contact-company-website">
+                    Leave this field empty
+                  </label>
+
+                  <input
+                    id="contact-company-website"
+                    type="text"
+                    name="_gotcha"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
+                {/* Form Error */}
+                {submitError && (
+                  <div
+                    role="alert"
+                    className="mt-5 rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive"
+                  >
+                    {submitError}
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-primary-foreground shadow-(--shadow-glow) transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                  style={{
+                    background: "var(--gradient-primary)",
+                  }}
+                >
+                  {isSubmitting ? (
+                    "Sending Message..."
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="h-4 w-4" />
+                    </>
+                  )}
+                </button>
+
+                {/* Direct Email */}
+                <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
+                  Prefer email? Reach me directly at{" "}
+                  <a
+                    href="mailto:irenenjuguna98@gmail.com"
+                    className="font-medium text-primary hover:underline"
+                  >
+                    irenenjuguna98@gmail.com
+                  </a>
+                </p>
+
+              </form>
+            )}
+          </div>
+
         </div>
       </div>
     </section>
   );
 }
 
+/* ---------------------- Contact Card ---------------------- */
 function ContactCard({
   icon: Icon,
   label,
@@ -1987,89 +2123,181 @@ function ContactCard({
   value,
   href,
 }: {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   sub: string;
   value: string;
-  href: string;
+  href?: string;
 }) {
-  return (
-    <a
-      href={href}
-      className="block rounded-2xl border border-border bg-surface/60 p-5 hover:border-primary/40 transition"
-    >
-      <div className="flex items-start gap-4">
-        <div className="w-10 h-10 grid place-items-center rounded-xl bg-primary/10 text-primary">
-          <Icon className="w-5 h-5" />
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <span className="font-display font-semibold">{label}</span>
-            <span className="text-xs text-muted-foreground">• {sub}</span>
-          </div>
-          <div className="text-sm text-muted-foreground mt-1">{value}</div>
-        </div>
-        <ArrowUpRight className="w-4 h-4 text-muted-foreground" />
+  const content = (
+    <div className="flex items-start gap-4">
+      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+        <Icon className="h-5 w-5" />
       </div>
-    </a>
+
+      <div className="min-w-0 flex-1">
+        <h4 className="font-display text-sm font-semibold">
+          {label}
+        </h4>
+
+        <p className="mt-1 text-xs text-muted-foreground">
+          {sub}
+        </p>
+
+        <p className="mt-2 break-words text-sm text-foreground">
+          {value}
+        </p>
+      </div>
+
+      {href && (
+        <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+      )}
+    </div>
+  );
+
+  const styles =
+    "block rounded-2xl border border-border bg-surface/60 p-5 transition-colors";
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className={`${styles} hover:border-primary/40 hover:bg-surface-elevated`}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <div className={styles}>
+      {content}
+    </div>
   );
 }
 
+/* ---------------------- Form Field ---------------------- */
 function Field({
   label,
   name,
   ...props
-}: { label: string; name: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+}: {
+  label: string;
+  name: string;
+} & React.InputHTMLAttributes<HTMLInputElement>) {
+  const id = `contact-${name}`;
+
   return (
-    <label className="block">
-      <span className="text-sm font-medium block mb-2">{label}</span>
+    <div>
+      <label
+        htmlFor={id}
+        className="mb-2 block text-sm font-medium"
+      >
+        {label}
+      </label>
+
       <input
+        id={id}
         name={name}
         {...props}
-        className="w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
+        className="w-full rounded-xl border border-border bg-background/60 px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
       />
-    </label>
+    </div>
   );
 }
 
+
 /* ----------------------------- Footer ----------------------------- */
+
 function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="border-t border-border mt-10">
-      <div className="container-page py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-        <div className="flex items-center gap-3">
-          <span
-            className="grid place-items-center w-8 h-8 rounded-full text-xs font-bold text-primary-foreground shrink-0"
-            style={{ background: "var(--gradient-primary)" }}
-          >
-            IN
-          </span>
-          <span>
-            © {new Date().getFullYear()} Irene Njuguna • QA Engineer | Software Test Engineer
-          </span>
+    <footer className="mt-12 border-t border-border bg-background/40">
+      <div className="container-page py-8 sm:py-10">
+
+        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+
+          {/* Branding */}
+          <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:text-left">
+
+            <a
+              href="#top"
+              aria-label="Irene Njuguna - Back to top"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-primary-foreground transition hover:opacity-90"
+              style={{
+                background: "var(--gradient-primary)",
+              }}
+            >
+              IN
+            </a>
+
+            <div>
+              <p className="font-display text-sm font-semibold text-foreground">
+                Irene Njuguna
+              </p>
+
+              <p className="mt-1 text-xs text-muted-foreground">
+                QA Engineer • Test Automation • API Testing
+              </p>
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="flex items-center gap-3">
+
+            <a
+              href="https://github.com/Stensis"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit GitHub profile"
+              title="GitHub"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-muted-foreground transition hover:border-primary/50 hover:text-primary"
+            >
+              <Github className="h-4 w-4" />
+            </a>
+
+            <a
+              href="https://linkedin.com/in/irene-njuguna98"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit LinkedIn profile"
+              title="LinkedIn"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-muted-foreground transition hover:border-primary/50 hover:text-primary"
+            >
+              <Linkedin className="h-4 w-4" />
+            </a>
+
+            <a
+              href="mailto:irenenjuguna98@gmail.com"
+              aria-label="Send an email"
+              title="Email"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-muted-foreground transition hover:border-primary/50 hover:text-primary"
+            >
+              <Mail className="h-4 w-4" />
+            </a>
+
+          </div>
         </div>
-        <div className="flex items-center gap-4">
+
+        {/* Bottom Divider */}
+        <div className="my-6 border-t border-border" />
+
+        {/* Copyright */}
+        <div className="flex flex-col items-center justify-between gap-3 text-center text-xs text-muted-foreground sm:flex-row sm:text-left">
+
+          <p>
+            © {currentYear} Irene Njuguna. All rights reserved.
+          </p>
+
           <a
-            href="https://github.com/Stensis"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-primary transition-colors"
+            href="#top"
+            className="inline-flex items-center gap-1.5 font-medium transition hover:text-primary"
           >
-            <Github className="w-4 h-4" />
+            Back to top
+            <ArrowUpRight className="h-3.5 w-3.5" />
           </a>
-          <a
-            href="https://linkedin.com/in/irene-njuguna98"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="LinkedIn Profile"
-            className="hover:text-primary transition-colors"
-          ></a>
-          <a
-            href="mailto:irenenjuguna98@gmail.com"
-            className="hover:text-primary transition-colors aria-label='Email Contact'"
-          >
-            <Mail className="w-4 h-4" />
-          </a>
+
         </div>
       </div>
     </footer>
@@ -2088,12 +2316,25 @@ function SectionHeader({
 }) {
   return (
     <div className="max-w-3xl">
-      <div className="chip-accent mb-4">
-        <Sparkles className="w-3 h-3" />
-        {eyebrow}
+
+      {/* Section Label */}
+      <div className="mb-4">
+        <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary">
+          <Sparkles className="h-3.5 w-3.5" />
+          {eyebrow}
+        </span>
       </div>
-      <h2 className="text-3xl md:text-5xl font-bold leading-tight">{title}</h2>
-      <p className="mt-4 text-base md:text-lg text-muted-foreground">{subtitle}</p>
+
+      {/* Section Title */}
+      <h2 className="font-display text-3xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+        {title}
+      </h2>
+
+      {/* Section Description */}
+      <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
+        {subtitle}
+      </p>
+
     </div>
   );
 }
