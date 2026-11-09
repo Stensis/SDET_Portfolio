@@ -499,6 +499,7 @@ function Hero() {
                   "Playwright",
                   "Postman",
                   "Python",
+                  
                   "AWS",
                   "TypeScript",
                   "Git",
